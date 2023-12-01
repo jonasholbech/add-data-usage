@@ -4,6 +4,7 @@
   import { derived } from 'svelte/store'
   
   const totalTimeRun = 20*10//Sekunder
+  //https://stinna.dk/aftensmad/taerte-med-karamelliserede-loeg.html
   const raw = [
     [0,0,0,0],
     [20, 1.22, 122, 6.2],
