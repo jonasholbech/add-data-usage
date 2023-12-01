@@ -2,50 +2,8 @@
     import { tweened } from 'svelte/motion'
   import { linear } from 'svelte/easing'
   import { derived } from 'svelte/store'
-  
-  const totalTimeRun = 20*10//Sekunder
-  //https://stinna.dk/aftensmad/taerte-med-karamelliserede-loeg.html
-  const raw = [
-    [0,0,0,0],
-    [20, 1.22, 122, 6.2],
-    [20, 1.22, 243, 9.7],
-    [71, 4.11, 244, 9.8],
-    [71, 4.11, 244, 9.8],
-    [71, 4.11, 252, 10.0],
-    [72, 4.25, 253, 10.0],
-    [72, 4.25, 269, 10.3],
-    [72, 4.25, 270, 10.3],
-    [72, 4.25, 286, 10.7],
-    [72, 4.25, 287, 10.7],
-    [72, 4.25, 325, 11.5],
-    [72, 4.25, 329, 11.5],
-    [72, 4.25, 367, 12.4],
-    [72, 4.25, 371, 12.4],
-    [72, 4.25, 409, 13.2],
-    [72, 4.25, 413, 13.2],
-    [72, 4.25, 451, 14.1],
-    [72, 4.25, 476, 14.6],
-    [72, 4.25, 481, 14.6],
-  ]
-  const parsed = {}
-  const highestRequests=raw.at(-1)[2];
-  const highestSize=raw.at(-1)[3];
-  console.log(highestRequests, highestSize, raw.length)
-  raw.forEach((row, index)=>{
-    const [r1,s1,r2,s2]=row;
-    
-    parsed[index*10] = {
-      noadds: {
-        requests:r1,
-        transferred: s1
-      },
-      adds: {
-        requests:r2,
-        transferred: s2
-      }
-    }
-  })
-  
+  import { raw, parsed, highestRequests, highestSize, totalTimeRun } from "./data";
+  import Bar from "./Bar.svelte";
   let index=0;
 
   let r1 = tweened(0, { duration: 900, easing: linear })
@@ -94,27 +52,28 @@
   <button on:click={play}>{running ? "Pause":"Play"}</button>
   <button on:click={reset}>Reset</button>
   <h1>{index} sekunder</h1>
+  <Bar {index} {parsed}/>
   <div id="graph">
     <div class="browser">
       <h2>No adds</h2>
       <div class="column">
-        <h3>Requests: <strong>{$formattedR1}</strong></h3>
-        <div class="bar" style={`--height:${parsed[index].noadds.requests / highestRequests*100}%`}></div>
+        <h3><strong>{$formattedR1}</strong> requests</h3>
+        <div class="bar" style={`--height:${parsed[index].noadds.requests / highestRequests*100}`}></div>
       </div>
       <div class="column">
-        <h3>Transferred: <strong>{$formattedS1}mb</strong></h3>
-        <div class="bar" style={`--height:${parsed[index].noadds.transferred / highestSize*100}%`}></div>
+        <h3><strong>{$formattedS1}mb</strong> transferred</h3>
+        <div class="bar" style={`--height:${parsed[index].noadds.transferred / highestSize*100}`}></div>
       </div>
     </div>
     <div class="browser">
       <h2>No adds</h2>
       <div class="column">
-        <h3>Requests: <strong>{$formattedR2}</strong></h3>
-        <div class="bar" style={`--height:${parsed[index].adds.requests / highestRequests*100}%`}></div>
+        <h3><strong>{$formattedR2}</strong> requests</h3>
+        <div class="bar" style={`--height:${parsed[index].adds.requests / highestRequests*100}`}></div>
       </div>
       <div class="column">
-        <h3>Transferred: <strong>{$formattedS2}mb</strong></h3>
-        <div class="bar" style={`--height:${parsed[index].adds.transferred / highestSize*100}%`}></div>
+        <h3><strong>{$formattedS2}mb</strong> transferred</h3>
+        <div class="bar" style={`--height:${parsed[index].adds.transferred / highestSize*100}`}></div>
       </div>
     </div>
   </div>
@@ -152,7 +111,7 @@
     background:hotpink;
     margin-top:auto;
     min-height:5px;
-    height: var(--height);/*calc(var(--height) + 0px);*/
+    height: calc(var(--height) * 1%);
   }
   h1 {
     text-align:center;
