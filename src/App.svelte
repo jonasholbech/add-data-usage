@@ -5,27 +5,15 @@
   import { raw, parsed, highestRequests, highestSize, totalTimeRun } from "./data";
   import Bar from "./Bar.svelte";
   let index=0;
-
-  let r1 = tweened(0, { duration: 900, easing: linear })
-  let r2 = tweened(0, { duration: 900, easing: linear })
-  let s1 = tweened(0, { duration: 900, easing: linear })
-  let s2 = tweened(0, { duration: 900, easing: linear })
-
-  let formattedR1 = derived(r1, ($myNumber) => $myNumber.toFixed())
-  let formattedR2 = derived(r2, ($myNumber) => $myNumber.toFixed())
-  let formattedS1 = derived(s1, ($myNumber) => $myNumber.toFixed(2))
-  let formattedS2 = derived(s2, ($myNumber) => $myNumber.toFixed(2))
+  let running=false;
+  
   function increment(){
     index=index+10
     if(index>=raw.length*10){
       index=0;
     }
-    r1.set(parsed[index].noadds.requests)
-    r2.set(parsed[index].adds.requests)
-    s1.set(parsed[index].noadds.transferred)
-    s2.set(parsed[index].adds.transferred)
   }
-  let running=false;
+  
   function tick(){
     if(running){
       increment();
@@ -41,10 +29,6 @@
   function reset(){
     running=false;
     index=0;
-    r1.set(0)
-    r2.set(0)
-    s1.set(0)
-    s2.set(0)
   }
 </script>
 
@@ -52,29 +36,16 @@
   <button on:click={play}>{running ? "Pause":"Play"}</button>
   <button on:click={reset}>Reset</button>
   <h1>{index} sekunder</h1>
-  <Bar {index} {parsed}/>
   <div id="graph">
     <div class="browser">
       <h2>No adds</h2>
-      <div class="column">
-        <h3><strong>{$formattedR1}</strong> requests</h3>
-        <div class="bar" style={`--height:${parsed[index].noadds.requests / highestRequests*100}`}></div>
-      </div>
-      <div class="column">
-        <h3><strong>{$formattedS1}mb</strong> transferred</h3>
-        <div class="bar" style={`--height:${parsed[index].noadds.transferred / highestSize*100}`}></div>
-      </div>
+      <Bar value={parsed[index].noadds.requests} label="requests" percent={parsed[index].noadds.requests / highestRequests*100} />
+      <Bar value={parsed[index].noadds.transferred} label="transferred" percent={parsed[index].noadds.transferred / highestSize*100} />
     </div>
     <div class="browser">
       <h2>No adds</h2>
-      <div class="column">
-        <h3><strong>{$formattedR2}</strong> requests</h3>
-        <div class="bar" style={`--height:${parsed[index].adds.requests / highestRequests*100}`}></div>
-      </div>
-      <div class="column">
-        <h3><strong>{$formattedS2}mb</strong> transferred</h3>
-        <div class="bar" style={`--height:${parsed[index].adds.transferred / highestSize*100}`}></div>
-      </div>
+      <Bar value={parsed[index].adds.requests} label="requests" percent={parsed[index].adds.requests / highestRequests*100} />
+      <Bar value={parsed[index].adds.transferred} label="transferred" percent={parsed[index].adds.transferred / highestSize*100} />
     </div>
   </div>
 </main>
@@ -91,27 +62,6 @@
   h2 {
     grid-column: 1/-1;
     text-align:center;
-  }
-  h3 {
-    padding-inline-start:1rem;
-    color:#ccc;
-    
-  }
-  h3 strong {
-      color:#eee;
-    }
-  .column {
-    display: flex;
-    flex-direction: column;
-    min-height:400px;
-    border: 1px solid #eee;
-  }
-  .bar {
-    transition: height 1s linear;
-    background:hotpink;
-    margin-top:auto;
-    min-height:5px;
-    height: calc(var(--height) * 1%);
   }
   h1 {
     text-align:center;
