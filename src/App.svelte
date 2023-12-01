@@ -6,7 +6,7 @@
   import Bar from "./Bar.svelte";
   let index=0;
   let running=false;
-  
+
   function increment(){
     index=index+10
     if(index>=raw.length*10){
@@ -43,7 +43,7 @@
       <Bar value={parsed[index].noadds.transferred} label="transferred" percent={parsed[index].noadds.transferred / highestSize*100} />
     </div>
     <div class="browser">
-      <h2>No adds</h2>
+      <h2>With adds</h2>
       <Bar value={parsed[index].adds.requests} label="requests" percent={parsed[index].adds.requests / highestRequests*100} />
       <Bar value={parsed[index].adds.transferred} label="transferred" percent={parsed[index].adds.transferred / highestSize*100} />
     </div>
